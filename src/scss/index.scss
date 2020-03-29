@@ -1,0 +1,33 @@
+@import "variables";
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: $root-font-size;
+  font-family: "PT Sans", sans-serif;
+}
+
+.main {
+  width: 60em;
+  margin: 3rem auto;
+}
+
+.infobox {
+  position: absolute;
+  border: 1px solid $black;
+  background-color: #fff;
+  font-size: 0.75em;
+  padding: 1em;
+  pointer-events: none;
+
+  visibility: hidden;
+  opacity: 0;
+
+  &.visible {
+    visibility: visible;
+    opacity: 1;
+  }
+}
