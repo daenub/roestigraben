@@ -32,6 +32,8 @@ html {
   }
 }
 
+/* Table */
+
 .table {
   width: 100%;
   border-spacing: 0;
@@ -78,4 +80,15 @@ html {
 .body-cell {
   padding: 0.5em;
   border-bottom: 1px solid #dfdfdf;
+}
+
+/* Search */
+
+.search {
+  border: 1px solid $black;
+  display: block;
+  font: inherit;
+  padding: 0.5em;
+  margin-bottom: 0.5rem;
+  width: 100%;
 }

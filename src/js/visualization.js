@@ -103,8 +103,13 @@ function generateTable(yesVoteDiffs, minDiff, maxDiff) {
     .domain([minDiff, 0, maxDiff])
     .range(["red", "#000", "green"])
 
-  const table = d3.select("#table")
+  const search = d3.select("#search")
 
+  search.on("input", (d, i, nodes) => {
+    filterTable(nodes[i].value)
+  })
+
+  const table = d3.select("#table")
   const headRow = table.append("thead").append("tr")
   const tableBody = table.append("tbody")
 
@@ -169,5 +174,18 @@ function generateTable(yesVoteDiffs, minDiff, maxDiff) {
         ? a.yesVotesDiff - b.yesVotesDiff
         : b.yesVotesDiff - a.yesVotesDiff
     )
+  }
+
+  function filterTable(query) {
+    if (query === "") {
+      bodyRows.style("display", "table-row")
+    } else {
+      bodyRows.style("display", d =>
+        d.municipalityGeoLevelname.toLowerCase().indexOf(query.toLowerCase()) >
+        -1
+          ? "table-row"
+          : "none"
+      )
+    }
   }
 }
