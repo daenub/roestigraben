@@ -2,7 +2,6 @@ import json
 import os
 import csv
 
-import numpy as np
 import pandas as pd
 
 DATA_DIR = "data/"
@@ -40,7 +39,7 @@ for file in files:
         number = municipality.get("geoLevelnummer")
 
         if yesVotes:
-          records.append([number, name, canton_geo_level_name, canton_geo_level_nummer, round(overallYesVotes - yesVotes, 5)])
+          records.append([number, name, canton_geo_level_nummer, canton_geo_level_name, round(overallYesVotes - yesVotes, 5)])
 
 
 vote_diffs = pd.DataFrame(records, columns=columns)
