@@ -24,12 +24,12 @@ d3.csv("assets/yesVoteDiffs.csv").then(yesVoteDiffs => {
   const maxDiff = d3.max(yesVoteDiffs, d => d.yesVotesDiff)
   const minDiff = d3.min(yesVoteDiffs, d => d.yesVotesDiff)
 
+  generateTable(yesVoteDiffs, minDiff, maxDiff, selectMunicipality)
+
   const colorScale = d3
     .scaleLinear()
     .domain([minDiff, 0, maxDiff])
     .range(["red", "#ddd", "green"])
-
-  generateTable(yesVoteDiffs, minDiff, maxDiff)
 
   const width = 960,
     height = 500
@@ -50,13 +50,26 @@ d3.csv("assets/yesVoteDiffs.csv").then(yesVoteDiffs => {
     .append("path")
     .attr("d", d => pathGenerator(d))
     .attr("stroke", "#000")
+    .attr("stroke-width", 1)
     .attr("fill", d => colorScale(d.properties.diff || 0))
     .on("mouseover", onMouseOver)
     .on("mouseleave", onMouseLeave)
+
+  function selectMunicipality(municipalityGeoLevelnummer) {
+    if (!municipalityGeoLevelnummer) {
+      paths.attr("stroke-width", 1)
+    } else {
+      paths.attr("stroke-width", (d, i) =>
+        d.properties.id === parseInt(municipalityGeoLevelnummer) ? 2 : 1
+      )
+    }
+  }
 })
 
-function onMouseOver(d, i) {
+function onMouseOver(d, i, nodes) {
   const {name, canton, diff} = d.properties
+
+  d3.select(nodes[i]).attr("stroke-width", "2")
 
   if (!name || !canton || !diff) {
     return
@@ -69,8 +82,9 @@ function onMouseOver(d, i) {
     .style("top", d3.event.pageY + "px")
 }
 
-function onMouseLeave() {
+function onMouseLeave(d, i, nodes) {
   infobox.html("").classed("visible", false)
+  d3.select(nodes[i]).attr("stroke-width", "1")
 }
 
 function mergeDataAndFeatures(geoJsonFeatures, yesVoteDiffs) {
@@ -96,7 +110,7 @@ function mergeDataAndFeatures(geoJsonFeatures, yesVoteDiffs) {
 
 /* Table */
 
-function generateTable(yesVoteDiffs, minDiff, maxDiff) {
+function generateTable(yesVoteDiffs, minDiff, maxDiff, selectMunicipality) {
   let ascending = true
   const colorScale = d3
     .scaleLinear()
@@ -138,6 +152,8 @@ function generateTable(yesVoteDiffs, minDiff, maxDiff) {
     .enter()
     .append("tr")
     .classed("body-row", true)
+    .on("mouseover", d => selectMunicipality(d.municipalityGeoLevelnummer))
+    .on("mouseleave", d => selectMunicipality(null))
 
   bodyRows
     .append("td")
