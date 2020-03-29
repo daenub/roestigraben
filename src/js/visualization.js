@@ -10,6 +10,7 @@ const infobox = d3.select(".infobox")
 
 d3.csv("assets/yesVoteDiffs.csv").then(yesVoteDiffs => {
   yesVoteDiffs = yesVoteDiffs.map(r => ({...r, yesVotesDiff: +r.yesVotesDiff}))
+
   const geojsonMunicipalities = topojson.feature(
     topology,
     topology.objects.municipalities
@@ -23,10 +24,12 @@ d3.csv("assets/yesVoteDiffs.csv").then(yesVoteDiffs => {
   const maxDiff = d3.max(yesVoteDiffs, d => d.yesVotesDiff)
   const minDiff = d3.min(yesVoteDiffs, d => d.yesVotesDiff)
 
-  var colorScale = d3
+  const colorScale = d3
     .scaleLinear()
     .domain([minDiff, 0, maxDiff])
     .range(["red", "#ddd", "green"])
+
+  generateTable(yesVoteDiffs, minDiff, maxDiff)
 
   const width = 960,
     height = 500
@@ -89,4 +92,82 @@ function mergeDataAndFeatures(geoJsonFeatures, yesVoteDiffs) {
       },
     }
   })
+}
+
+/* Table */
+
+function generateTable(yesVoteDiffs, minDiff, maxDiff) {
+  let ascending = true
+  const colorScale = d3
+    .scaleLinear()
+    .domain([minDiff, 0, maxDiff])
+    .range(["red", "#000", "green"])
+
+  const table = d3.select("#table")
+
+  const headRow = table.append("thead").append("tr")
+  const tableBody = table.append("tbody")
+
+  headRow
+    .append("td")
+    .text("Gemeinde")
+    .classed("head-cell", true)
+
+  headRow
+    .append("td")
+    .text("Kanton")
+    .classed("head-cell", true)
+
+  headRow
+    .append("td")
+    .classed("head-cell", true)
+    .append("button")
+    .classed("sort-button", true)
+    .classed("ascending", ascending)
+    .text("Differenz")
+    .on("click", onSortClick)
+
+  const bodyRows = tableBody
+    .selectAll("tr")
+    .data(yesVoteDiffs)
+    .enter()
+    .append("tr")
+    .classed("body-row", true)
+
+  bodyRows
+    .append("td")
+    .text((d, i) => d.municipalityGeoLevelname)
+    .classed("body-cell", true)
+
+  bodyRows
+    .append("td")
+    .text((d, i) => d.cantonGeoLevelname)
+    .classed("body-cell", true)
+
+  bodyRows
+    .append("td")
+    .text((d, i) =>
+      d.yesVotesDiff > 0
+        ? "+" + d.yesVotesDiff.toFixed(5)
+        : d.yesVotesDiff.toFixed(5)
+    )
+    .style("color", d => colorScale(d.yesVotesDiff))
+    .classed("body-cell", true)
+
+  sortTable()
+
+  function onSortClick(d, i, nodes) {
+    ascending = !ascending
+    sortTable()
+
+    d3.select(nodes[i]).classed("ascending", ascending)
+  }
+
+  function sortTable() {
+    bodyRows.sort((a, b) =>
+      ascending
+        ? a.yesVotesDiff - b.yesVotesDiff
+        : b.yesVotesDiff - a.yesVotesDiff
+    )
+  }
 }

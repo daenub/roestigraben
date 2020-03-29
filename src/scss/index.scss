@@ -31,3 +31,51 @@ html {
     opacity: 1;
   }
 }
+
+.table {
+  width: 100%;
+  border-spacing: 0;
+  border-left: 1px solid #dfdfdf;
+  border-right: 1px solid #dfdfdf;
+}
+
+.head-cell {
+  font-weight: bold;
+  background-color: #354a5f;
+  color: $white;
+  padding: 0.5em;
+}
+
+.sort-button {
+  background: none;
+  border: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+
+  &::before {
+    content: "▴";
+    margin-right: 0.5em;
+    display: inline-block;
+    transform: rotate(180deg);
+  }
+
+  &.ascending {
+    &::before {
+      transform: rotate(0deg);
+    }
+  }
+}
+
+.body-row:nth-child(even) .body-cell {
+  background-color: #fbfbfb;
+}
+
+.body-row:hover .body-cell {
+  background-color: #efefef;
+}
+
+.body-cell {
+  padding: 0.5em;
+  border-bottom: 1px solid #dfdfdf;
+}
